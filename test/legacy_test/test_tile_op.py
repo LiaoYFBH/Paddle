@@ -460,6 +460,7 @@ class TestTileError(unittest.TestCase):
 
 class TestTileAPIStatic(unittest.TestCase):
     def test_api(self):
+        paddle.enable_static()
         with paddle.static.program_guard(
             paddle.static.Program(), paddle.static.Program()
         ):
