@@ -3864,6 +3864,9 @@
       data_type : int
       tensor_name : RepeatTimes
       tensors_name : repeat_times_tensor
+    args:
+        input: x
+        dims: repeat_times
 
 - op : topk (top_k_v2)
   backward : topk_grad (top_k_v2_grad)
@@ -4043,6 +4046,9 @@
       tensor_name : StopUpdate
   get_expected_kernel_type :
     update_loss_scaling_ : GetUpdateLossScalingExpectedKernelType
+
+- op : view_shape
+  backward : view_shape_grad, view_shape_double_grad
 
 - op : viterbi_decode
   inputs :

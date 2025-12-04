@@ -4919,9 +4919,11 @@ def chunk(
 
 
 def tile(
-    x: Tensor,
-    repeat_times: TensorOrTensors | Sequence[int],
+    x: Tensor | None = None,
+    repeat_times: TensorOrTensors | Sequence[int] | None = None,
     name: str | None = None,
+    input: Tensor | None = None,
+    dims: TensorOrTensors | Sequence[int] | None = None,
 ) -> Tensor:
     """
 
@@ -4935,6 +4937,8 @@ def tile(
         repeat_times (list|tuple|Tensor): The number of repeating times. If repeat_times is a list or tuple, all its elements
             should be integers or 1-D Tensors with the data type int32. If repeat_times is a Tensor, it should be an 1-D Tensor with the data type int32.
         name (str|None, optional): Name for the operation (optional, default is None). For more information, please refer to :ref:`api_guide_Name`.
+        input (Tensor, optional): Alias for ``x``.
+        dims (list|tuple|Tensor, optional): Alias for ``repeat_times``.
 
     Returns:
         N-D Tensor. The data type is the same as ``x``. The size of the i-th dimension is equal to ``x[i] * repeat_times[i]``.
@@ -4963,6 +4967,15 @@ def tile(
             Tensor(shape=[1, 6], dtype=int32, place=Place(cpu), stop_gradient=True,
             [[1, 2, 3, 1, 2, 3]])
     """
+    if input is not None:
+        x = input
+    if dims is not None:
+        repeat_times = dims
+
+    if x is None:
+        raise ValueError("Argument 'x' (or 'input') is required")
+    if repeat_times is None:
+        raise ValueError("Argument 'repeat_times' (or 'dims') is required")
 
     def check_input(x, repeat_times):
         check_type(

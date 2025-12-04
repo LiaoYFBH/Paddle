@@ -480,6 +480,30 @@ class TestTileAPIStatic(unittest.TestCase):
 
 # Test python API
 class TestTileAPI(unittest.TestCase):
+    def test_alias(self):
+        import paddle
+        import numpy as np
+        
+        paddle.disable_static()
+
+        # Init data
+        np_data = np.random.random((2, 3)).astype("float32")
+        x = paddle.to_tensor(np_data)
+        repeat_times = [2, 1]
+
+        # Case 1: Use alias arguments (input -> x, dims -> repeat_times)
+        out_alias = paddle.tile(input=x, dims=repeat_times)
+
+        # Case 2: Standard usage
+        out_standard = paddle.tile(x, repeat_times)
+
+        # Verify results are identical
+        np.testing.assert_array_equal(out_standard.numpy(), out_alias.numpy())
+
+        # Case 3: Mixed usage (positional x + keyword dims)
+        out_mixed = paddle.tile(x, dims=repeat_times)
+        np.testing.assert_array_equal(out_standard.numpy(), out_mixed.numpy())
+
     def test_api(self):
         with base.dygraph.guard():
             np_x = np.random.random([12, 14]).astype("float32")
@@ -632,7 +656,6 @@ class Testfp16TileOp(unittest.TestCase):
             exe = paddle.static.Executor(place)
             exe.run(paddle.static.default_startup_program())
             out = exe.run(feed={'x': input_x}, fetch_list=[out])
-
 
 if __name__ == "__main__":
     paddle.enable_static()
